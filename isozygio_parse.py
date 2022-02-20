@@ -1,5 +1,9 @@
+import os
 import re
 from collections import namedtuple
+
+from ini_handle import APP_PATH
+from utils import grglish_small_nosp
 
 GREEK_NUMBER_RE = r"[\d\.]+,\d{2}"  # r'[0-9]+(\.[0-9]+)?(\,[0-9]+)?')"
 GREEK_ACCOUNT_RE = r"[0-9\.]+"
@@ -72,8 +76,10 @@ def parse(isozygio_lines: str, pars: dict) -> dict:
 
         if lin.acc != '':
             lines.append(lin)
+    gname = grglish_small_nosp(name)
+    gpath = os.path.join(APP_PATH, gname)
 
-    return {'name': name, 'apo': apo, 'eos': eos, 'lines': lines}
+    return {'name': name, 'gname': gpath, 'apo': apo, 'eos': eos, 'lines': lines}
 
 
 def filter_low_level(accounts: list, pars: dict) -> list:
@@ -137,6 +143,5 @@ def parse_filtered(isozygio_text: str, pars, pistotiko: float = 0) -> dict:
     fpa = calculate_fpa_from_isozygio(low_level, pars)
 
     parsed['D5400'] = fpa
-    parsed['D401'] = pistotiko
     parsed['lines'] = only_fpa
     return parsed

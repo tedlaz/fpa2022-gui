@@ -1,14 +1,15 @@
+import os
 import sys
 from collections import namedtuple
 
-from PySide6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtPrintSupport, QtWidgets
 from PySide6.QtCore import Qt
 
 from calculate2html import html_final
 from fpagui_ui import Ui_MainWindow
-from ini_handle import ACCOUNT_MATCH, INI, PARSE_POSITIONS
-from isozygio_parse import parse, parse_filtered
-from moving_codes_e2 import e2codes
+from ini_handle import INI, PARSE_POSITIONS
+from isozygio_parse import parse_filtered
+from moving_codes_e2 import E2CODES
 
 IsoSelector = namedtuple('IsoSelector', 'row start end size')
 
@@ -17,21 +18,34 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.setAcceptDrops(True)
+        self.isozygio.setFont(INI.value('isozygio_font'))
+        self.isozygio_file_name = ''
         self.matched = {}
+        self.res = {}
+        self.pistotiko = 0
+        self.load_parse_positions_from_ini()
         self.create_connections()
 
+    def load_parse_positions_from_ini(self):
         self.codata = PARSE_POSITIONS['name']
         self.le_eponymia.setText(f'{self.codata}')
+
         self.apo = PARSE_POSITIONS['apo']
         self.le_apo.setText(f'{self.apo}')
+
         self.eos = PARSE_POSITIONS['eos']
         self.le_eos.setText(f'{self.eos}')
+
         self.account = PARSE_POSITIONS['acc']
         self.le_account.setText(f'{self.account}')
+
         self.per = PARSE_POSITIONS['per']
         self.le_per.setText(f'{self.per}')
+
         self.debit = PARSE_POSITIONS['xre']
         self.le_debit.setText(f'{self.debit}')
+
         self.credit = PARSE_POSITIONS['pis']
         self.le_credit.setText(f'{self.credit}')
 
@@ -61,8 +75,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         return pars
 
     def create_connections(self):
-        self.actionOpen.triggered.connect(self.open)
-        self.actionopenfpa.triggered.connect(self.open_fpa)
+        self.actionopenfpa.triggered.connect(self.open)
+        self.actionselectfont.triggered.connect(self.select_font)
         self.isozygio.selectionChanged.connect(
             self.handleIsozygioSelectionChanged)
         self.isozygio.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -70,6 +84,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.on_isozygio_context)
         self.btn_parse.clicked.connect(self.handle_parse)
         self.btnmatch.clicked.connect(self.handle_match)
+        self.btnprint.clicked.connect(self.printpreviewDialog)
+
+    def select_font(self):
+        opval = QtWidgets.QFontDialog.MonospacedFonts
+        options = QtWidgets.QFontDialog.FontDialogOptions(opval)
+        ok, font = QtWidgets.QFontDialog.getFont(
+            self.isozygio.font(), self, 'Επιλογή γρμματοσειράς', options)
+        if ok:
+            self.isozygio.setFont(font)
+            INI.setValue('isozygio_font', font)
 
     def handle_parse(self):
         if not self.isozygio.toPlainText():
@@ -89,23 +113,43 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         pars = self.create_pars_parameters()
         self.res = parse_filtered(self.isozygio.toPlainText(), pars)
         accounts = [f'{i.acc} - {i.per}' for i in self.res['lines']]
-        self.trans.setPlainText(str(self.res))
         self.accounts.setColumnCount(2)
         self.accounts.setRowCount(len(accounts))
         self.accounts.setHorizontalHeaderLabels(['Λογαριασμός', 'Κωδικός'])
+        self.accounts.setColumnWidth(0, 400)
+
+        self.accounts.horizontalHeader().setStretchLastSection(True)
+
         self.matched = self.load_account_e2_matching()
-        e2codes_reverse = {val: key for key, val in e2codes.items()}
+        if not self.matched:
+            self.accounts.setColumnCount(0)
+            self.accounts.setRowCount(0)
+            return
+        e2codes_reverse = {val: key for key, val in E2CODES.items()}
         for i, acc in enumerate(accounts):
             self.accounts.setItem(i, 0, QtWidgets.QTableWidgetItem(acc))
             combo = QtWidgets.QComboBox()
-            for item in e2codes.keys():
-                combo.addItem(item)
+            combo.wheelEvent = lambda event: None
+            combo.addItems(E2CODES)
             acclean, *_ = acc.split('-')
             dcode = self.matched.get(acclean.strip(), '-')
             combo.setCurrentText(e2codes_reverse[dcode])
             self.accounts.setCellWidget(i, 1, combo)
-        self.tabWidget.setCurrentIndex(1)
-        self.handle_match()
+        self.accounts.resizeRowsToContents()
+        self.accounts.resizeColumnsToContents()
+        pistotiko, ok = QtWidgets.QInputDialog.getDouble(
+            self,
+            "Πιστωτικό Υπόλοιπο",
+            "Πόσό:",
+            self.pistotiko,
+            0,
+            10000000,
+            2
+        )
+        if ok:
+            self.pistotiko = pistotiko
+            self.tabWidget.setCurrentIndex(1)
+            self.handle_match()
 
     def handle_match(self):
         row_number = self.accounts.rowCount()
@@ -113,7 +157,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         for i in range(row_number):
             account_with_perigrafi = self.accounts.item(i, 0).text()
             acc, *_ = account_with_perigrafi.split('-')
-            e2code = e2codes[self.accounts.cellWidget(i, 1).currentText()]
+            e2code = E2CODES[self.accounts.cellWidget(i, 1).currentText()]
             if e2code == '-':
                 not_matched.append(account_with_perigrafi)
             else:
@@ -133,7 +177,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             'epon': self.res['name'],
             'apo': self.res['apo'],
             'eos': self.res['eos'],
-            'D401': self.res['D401'],
+            'D401': self.pistotiko,
             'D5400': self.res['D5400'],
         }
         for line in self.res['lines']:
@@ -144,18 +188,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def load_account_e2_matching(self):
         dict1 = {}
-        try:
-            with open(ACCOUNT_MATCH, encoding='utf8') as fil:
+        if os.path.exists(self.res['gname']):
+            with open(self.res['gname'], encoding='utf8') as fil:
                 for line in fil.readlines():
                     acc, e2code = line.split()
                     dict1[acc] = e2code
-        except Exception:
-            pass
+            return dict1
+        QtWidgets.QMessageBox.critical(
+            self, 'Προσοχή', f"Η εταιρεία {self.res['name']} δεν είναι παραμετροποιημένη")
         return dict1
 
     def save_account_e2_matching(self):
         sort_vals = [f"{k} {self.matched[k]}" for k in sorted(self.matched)]
-        with open(ACCOUNT_MATCH, 'w', encoding='utf8') as fil:
+        with open(self.res['gname'], 'w', encoding='utf8') as fil:
             fil.write('\n'.join(sort_vals))
 
     def on_isozygio_context(self, point):
@@ -257,19 +302,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def open(self):
         # fnam, _ = qw.QFileDialog.getOpenFileName(self, "Open", self.fnam, "")
         inif = INI.value('isozygio_file', defaultValue='')
-        encoding_from_ini = INI.value('encoding', defaultValue='WINDOWS-1253')
         file_name, _ = QtWidgets.QFileDialog.getOpenFileName(
-            self, 'Open', inif, "")
+            self, 'Open', inif, "*.txt")
         if file_name:
-            with open(file_name, encoding=encoding_from_ini) as fil:
-                self.isozygio.setPlainText(fil.read())
-            INI.setValue('isozygio_file', file_name)
+            self.open_isozygio_file(file_name)
+        self.handle_parse()
 
-    def open_fpa(self):
-        fileName, filtr = QtWidgets.QFileDialog.getOpenFileName(self)
-        if fileName:
-            with open(fileName, encoding='utf8') as fil:
-                self.fpa.setHtml(fil.read())
+    def open_isozygio_file(self, file_name):
+        encoding_from_ini = INI.value('encoding', defaultValue='WINDOWS-1253')
+        with open(file_name, encoding=encoding_from_ini) as fil:
+            self.isozygio.setPlainText(fil.read())
+        INI.setValue('isozygio_file', file_name)
+        self.fpa.setHtml('')
+        self.accounts.setRowCount(0)
+        self.accounts.setColumnCount(0)
+        self.tabWidget.setCurrentIndex(0)
+        self.isozygio_file_name = file_name
 
     def handleIsozygioSelectionChanged(self) -> IsoSelector:
         cursor = self.isozygio.textCursor()
@@ -285,8 +333,43 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # print(row, start, end, size)
         return IsoSelector(row, start, end, size)
 
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasText():
+            event.accept()
+        else:
+            event.ignore()
 
-app = QtWidgets.QApplication(sys.argv)
-window = MainWindow()
-window.show()
-app.exec()
+    def dropEvent(self, event):
+        dropped_txt = event.mimeData().text().replace('file:///', '')
+        if not dropped_txt.lower().endswith('.txt'):
+            QtWidgets.QMessageBox.critical(
+                self,
+                "Λάθος",
+                "Παρακαλώ δώστε τουλάχιστον ένα αρχείο κειμένου")
+        if os.path.exists(dropped_txt):
+            self.open_isozygio_file(dropped_txt)
+        self.handle_parse()
+
+    def printpreviewDialog(self):
+        if self.isozygio_file_name == '':
+            return
+        fname = '.'.join(self.isozygio_file_name.split('.')[:-1])
+        pdfname = f'{fname}.pdf'
+        printer = QtPrintSupport.QPrinter(
+            QtPrintSupport.QPrinter.HighResolution)
+        printer.setPageSize(QtGui.QPageSize.A3)
+        printer.setColorMode(QtPrintSupport.QPrinter.Color)
+        printer.setOutputFormat(QtPrintSupport.QPrinter.PdfFormat)
+        printer.setOutputFileName(pdfname)
+        if os.path.exists(pdfname):
+            response = QtWidgets.QMessageBox.question(
+                self,
+                'Προσοχή',
+                f'Υπάρχει ήδη to αρχείο {pdfname}, να συνεχίσω;',
+                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
+            )
+            if response == QtWidgets.QMessageBox.No:
+                return
+        self.fpa.print_(printer)
+        QtWidgets.QMessageBox.information(
+            self, 'Δημιουργήθηκε PDF', f'Το αρχείο {pdfname} δημιουργήθηκε με επιτυχία!!!')

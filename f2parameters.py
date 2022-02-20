@@ -135,14 +135,19 @@ table, th, td {{
 th, td {{
     padding: 3px;
 }}
+.color1 {{
+  background-color:#D8EBF9;
+  border: 1px solid black;
+  text-align: center;
+ }}
 </style>
 </head>
 <body style=" font-size:8pt; font-weight:400; font-style:normal; text-decoration:none;">
 <h2><center>ΠΕΡΙΟΔΙΚΗ ΔΗΛΩΣΗ ΦΠΑ</center></h2>
-<br>
+
 <p>Από : <b>{apo}</b> Έως :  <b>{eos}</b></p>
-<br>
-<table border="1" align="center" width="100%" cellspacing="0" cellpadding="4">
+
+<table width="100%">
   <tbody>
     <tr>
       <td colspan=12>Α. ΠΙΝΑΚΑΣ ΜΕ ΤΑ ΣΤΟΙΧΕΙΑ ΤΟΥ ΥΠΟΚΕΙΜΕΝΟΥ ΣΤΟ ΦΟΡΟ Ή ΛΗΠΤΗ</td>
@@ -152,109 +157,109 @@ th, td {{
     </tr>
     <tr>
       <td colspan=4>102.ΟΝΟΜΑ <br> <b>{onom}</b></td>
-      <td style="background-color:#D8EBF9"><center>103<center></td>
+      <td class="color1">103</td>
       <td colspan=4>ΟΝΟΜΑ ΠΑΤΕΡΑ <br><b>{patr}</b></td>
-      <td style="background-color:#D8EBF9"><center>104<center></td>
+      <td class="color1">104</td>
       <td colspan=2>ΑΦΜ <br><b>{afm}</b></td>
     </tr>
   </tbody>
 </table>
 <br>
-<table>
+<table width="100%">
   <tbody>
     <tr>
       <td colspan=11>Β. ΠΙΝΑΚΑΣ ΕΚΡΟΩΝ - ΕΙΣΡΟΩΝ μετά την αφαίρεση (κατά συντελεστή) των επιστροφών - εκπτώσεων.</td>
     </tr>
     <tr>
       <td rowspan=3><center>Ι. ΕΚΡΟΕΣ, ΕΝΔΟΚ. ΑΠΟΚΤΗΣΕΙΣ & ΠΡΑΞΕΙΣ ΛΗΠΤΗ σε λοιπή Ελλάδα</center></td>
-      <td width="3%" style="background-color:#D8EBF9"><center>301</center></td>
+      <td width="3%" class="color1">301</td>
       <td align="right" width="9%">{D301t}</td>
       <td width="3%"><center>13</center></td>
-      <td width="3%" style="background-color:#D8EBF9" ><center>331</center></td>
+      <td width="3%" class="color1">331</td>
       <td align="right" width="7%">{D331}</td>
       <td><center>Αγορές & δαπάνες εσωτερικού</center></td>
-      <td width="3%" style="background-color:#D8EBF9" ><center>361</center></td>
+      <td width="3%" class="color1">361</td>
       <td align="right" width="9%">{D361}</td>
-      <td width="3%" style="background-color:#D8EBF9" ><center>381</center></td>
+      <td width="3%" class="color1">381</td>
       <td align="right" width="7%">{D381}</td>
     </tr>
     <tr>
-      <td style="background-color:#D8EBF9"><center>302</center></td>
+      <td class="color1">302</td>
       <td align="right">{D302t}</td>
       <td><center>6</center></td>
-      <td style="background-color:#D8EBF9"><center>332</center></td>
+      <td class="color1">332</td>
       <td align="right">{D332}</td>
       <td><center>Αγορές & εισαγωγές παγίων</center></td>
-      <td style="background-color:#D8EBF9"><center>362</center></td>
+      <td class="color1">362</td>
       <td align="right">{D362}</td>
-      <td style="background-color:#D8EBF9"><center>382</center></td>
+      <td class="color1">382</td>
       <td align="right">{D382}</td>
     </tr>
     <tr>
-      <td style="background-color:#D8EBF9"><center>303</center></td>
+      <td class="color1">303</td>
       <td align="right">{D303t}</td>
       <td><center>24</center></td>
-      <td style="background-color:#D8EBF9"><center>333</center></td>
+      <td class="color1">333</td>
       <td align="right">{D333}</td>
       <td><center>Λοιπες εισαγωγές εκτός παγίων</center></td>
-      <td style="background-color:#D8EBF9"><center>363</center></td>
+      <td class="color1">363</td>
       <td align="right">{D363}</td>
-      <td style="background-color:#D8EBF9"><center>383</center></td>
+      <td class="color1">383</td>
       <td align="right">{D383}</td>
     </tr>
     <tr>
       <td rowspan=3><center>ΙΙ. ΕΚΡΟΕΣ, ΕΝΔΟΚ. ΑΠΟΚΤΗΣΕΙΣ & ΠΡΑΞΕΙΣ ΛΗΠΤΗ στα νησιά Αιγαίου</center></td>
-      <td style="background-color:#D8EBF9"><center>304</center></td>
+      <td class="color1">304</td>
       <td align="right">{D304t}</td>
       <td><center>9</center></td>
-      <td style="background-color:#D8EBF9"><center>334</center></td>
+      <td class="color1">334</td>
       <td align="right">{D334}</td>
       <td><center>Ενδοκοινοτικές αποκτήσεις αγαθών</center></td>
-      <td style="background-color:#D8EBF9"><center>364</center></td>
+      <td class="color1">364</td>
       <td align="right">{D364}</td>
-      <td style="background-color:#D8EBF9"><center>384</center></td>
+      <td class="color1">384</td>
       <td align="right">{D384}</td>
     </tr>
     <tr>
-      <td style="background-color:#D8EBF9"><center>305</center></td>
+      <td class="color1">305</td>
       <td align="right">{D305t}</td>
       <td><center>4</center></td>
-      <td style="background-color:#D8EBF9"><center>335</center></td>
+      <td class="color1">335</td>
       <td align="right">{D335}</td>
       <td><center>Ενδοκοινοτικές λήψεις υπηρεσιών</center></td>
-      <td style="background-color:#D8EBF9"><center>365</center></td>
+      <td class="color1">365</td>
       <td align="right">{D365}</td>
-      <td style="background-color:#D8EBF9"><center>385</center></td>
+      <td class="color1">385</td>
       <td align="right">{D385}</td>
     </tr>
     <tr>
-      <td style="background-color:#D8EBF9"><center>306</center></td>
+      <td class="color1">306</td>
       <td align="right">{D306t}</td>
       <td><center>17</center></td>
-      <td style="background-color:#D8EBF9"><center>336</center></td>
+      <td class="color1">336</td>
       <td align="right">{D336}</td>
       <td><center>Λοιπές πράξεις λήπτη</center></td>
-      <td style="background-color:#D8EBF9"><center>366</center></td>
+      <td class="color1">366</td>
       <td align="right">{D366}</td>
-      <td style="background-color:#D8EBF9"><center>386</center></td>
+      <td class="color1">386</td>
       <td align="right">{D386}</td>
     </tr>
     <tr>
       <td><center><b>ΣΥΝΟΛΟ ΦΟΡ. ΕΚΡΟΩΝ</b></center></td>
-      <td style="background-color:#D8EBF9"><center><b>307</b></center></td>
+      <td class="color1"><b>307</b></td>
       <td align="right"><b>{D307}</b></td>
       <td><center>ΣΥΝ</center></td>
-      <td style="background-color:#D8EBF9"><center><b>337</b></center></td>
+      <td class="color1"><b>337</b></td>
       <td align="right"><b>{D337}</b></td>
       <td><center><b>ΣΥΝΟΛΟ ΦΟΡΟΛ. ΕΙΣΡΟΩΝ</b></center></td>
-      <td style="background-color:#D8EBF9"><center><b>367</b></center></td>
+      <td class="color1"><b>367</b></td>
       <td align="right"><b>{D367}</b></td>
-      <td style="background-color:#D8EBF9"><center><b>387</b></center></td>
+      <td class="color1"><b>387</b></td>
       <td align="right"><b>{D387}</b></td>
     </tr>
     <tr>
       <td><center>Ενδοκοινοτικές παραδόσεις</center></td>
-      <td style="background-color:#D8EBF9"><center>342</center></td>
+      <td class="color1">342</td>
       <td align="right">{D342}</td>
       <td colspan=3 rowspan=10><center></center></td>
       <td colspan=3><center>δ. ΠΡΟΣΤΙΘΕΜΕΝΑ ΠΟΣΑ ΣΤΟ ΣΥΝΟΛΟ ΦΟΡΟΥ ΕΙΣΡΟΩΝ</center></td>
@@ -262,80 +267,80 @@ th, td {{
     </tr>
     <tr>
       <td><center>Ενδοκοινοτικές παροχές υπηρεσιών</center></td>
-      <td style="background-color:#D8EBF9"><center>345</center></td>
+      <td class="color1">345</td>
       <td align="right">{D345}</td>
       <td><center>Επιστροφή φόρου</center></td>
-      <td style="background-color:#D8EBF9"><center>400</center></td>
+      <td class="color1">400</td>
       <td align="right">{D400}</td>
     </tr>
     <tr>
       <td><center>Εξαγωγές & απαλλαγές πλοίων και αεροσκαφών</center></td>
-      <td style="background-color:#D8EBF9"><center>348</center></td>
+      <td class="color1">348</td>
       <td align="right">{D348}</td>
       <td><center>Λοιπά προστιθ. ποσά</center></td>
-      <td style="background-color:#D8EBF9"><center>402</center></td>
+      <td class="color1">402</td>
       <td align="right">{D402}</td>
-      <td style="background-color:#D8EBF9"><center>410</center></td>
+      <td class="color1">410</td>
       <td align="right">{D410}</td>
     </tr>
     <tr>
       <td><center>Λοιπές εκροές με Δικ Εκπ.</center></td>
-      <td style="background-color:#D8EBF9"><center>349</center></td>
+      <td class="color1">349</td>
       <td align="right">{D349}</td>
       <td><center>Ποσά διακαν.</center></td>
-      <td style="background-color:#D8EBF9"><center>407</center></td>
+      <td class="color1">407</td>
       <td align="right">{D407}</td>
       <td colspan=2 rowspan=3><center>-</center></td>
     </tr>
     <tr>
       <td><center>Εκροές χωρις δικ. εκπτ.</center></td>
-      <td style="background-color:#D8EBF9"><center>310</center></td>
+      <td class="color1">310</td>
       <td align="right">{D310}</td>
       <td colspan=3><center>ε. ΑΦΑΙΡΟΥΜΕΝΑ ΠΟΣΑ ΑΠΟ ΣΥΝΟΛΟ ΦΟΡΟΥ ΕΙΣΡΟΩΝ</center></td>
     </tr>
     <tr>
       <td rowspan=2><center><b>ΣΥΝΟΛΟ ΕΚΡΟΩΝ</b></center></td>
-      <td rowspan=2 style="background-color:#D8EBF9"><center><b>311</b></center></td>
+      <td rowspan=2 class="color1"><b>311</b></td>
       <td rowspan=2 align="right"><b>{D311}<b></td>
       <td><center>ΦΠΑ prorata</center></td>
-      <td style="background-color:#D8EBF9"><center>411</center></td>
+      <td class="color1">411</td>
       <td align="right">{D411}</td>
     </tr>
     <tr>
 
       <td><center>Λοιπά αφαιρούμ. ποσά</center></td>
-      <td style="background-color:#D8EBF9"><center>422</center></td>
+      <td class="color1">422</td>
       <td align="right">{D422}</td>
-      <td style="background-color:#D8EBF9"><center>428</center></td>
+      <td class="color1">428</td>
       <td align="right">{D428}</td>
     </tr>
     <tr>
       <td rowspan=2><center><b>Κύκλος εργασιών ΦΠΑ</b></center></td>
-      <td rowspan=2 style="background-color:#D8EBF9"><center><b>312</b></center></td>
+      <td rowspan=2 class="color1"><b>312</b></td>
       <td rowspan=2 align="right"><b>{D312}</b></td>
       <td><center>Ποσά διακανονισμών</center></td>
-      <td style="background-color:#D8EBF9"><center>423</center></td>
+      <td class="color1">423</td>
       <td align="right">{D423}</td>
     </tr>
     <tr>
       <td colspan=3><center><b>ΥΠΟΛΟΙΠΟ ΦΟΡΟΥ ΕΙΣΡΟΩΝ</b></center></td>
-      <td style="background-color:#D8EBF9"><center><b>430</b></center></td>
+      <td class="color1"><b>430</b></td>
       <td align="right"><b>{D430}</b></td>
     </tr>
   </tbody>
 </table>
 <br>
-<table border="1" align="center" width="100%" cellspacing="0" cellpadding="4">
+<table width="100%">
   <tbody>
     <tr>
       <td colspan=7><center><b>Γ. ΠΙΝΑΚΑΣ ΕΚΚΑΘΑΡΙΣΗΣ ΦΟΡΟΥ</b> για καταβολή, έκπτωση ή επιστροφή (κωδ.337 μείον κωδ.430)</center></td>
     </tr>
     <tr>
       <td><center><b>ΠΙΣΤΩΤΙΚΟ ΥΠΟΛΟΙΠΟ</b></center></td>
-      <td style="background-color:#D8EBF9"><center>470</center></td>
+      <td class="color1">470</td>
       <td align="right">{D470}</td>
       <td><center><b>ΧΡΕΩΣΤΙΚΟ ΥΠΟΛΟΙΠΟ</b></center></td>
-      <td style="background-color:#D8EBF9"><center>480</center></td>
+      <td class="color1">480</td>
       <td align="right">{D480}</td>
       <td rowspan=7>Σημειώσεις ......................................</td>
     </tr>
@@ -344,39 +349,39 @@ th, td {{
     </tr>
     <tr>
       <td><center>Πιστ.υπολ. προηγ. περιόδου</center></td>
-      <td style="background-color:#D8EBF9"><center>401</center></td>
+      <td class="color1">401</td>
       <td align="right">{D401}</td>
       <td><center>Χρεωστικό μέχρι 30€ προηγ. περιόδου</center></td>
-      <td style="background-color:#D8EBF9"><center>483</center></td>
+      <td class="color1">483</td>
       <td align="right">{D483}</td>
     </tr>
     <tr>
       <td><center>Βεβαιωμ. ποσά προηγ.</center></td>
-      <td style="background-color:#D8EBF9"><center>403</center></td>
+      <td class="color1">403</td>
       <td align="right">{D403}</td>
       <td><center>Ποσό που επιστράφηκε</center></td>
-      <td style="background-color:#D8EBF9"><center>505</center></td>
+      <td class="color1">505</td>
       <td align="right">{D505}</td>
     </tr>
     <tr>
       <td><center>Φόρος που έχει δεσμευτεί μέσω τραπεζών</center></td>
-      <td style="background-color:#D8EBF9"><center>404</center></td>
+      <td class="color1">404</td>
       <td align="right"></td>
     </tr>
     <tr>
       <td><center>ΠΟΣΟ για έκπτωση</center></td>
-      <td style="background-color:#D8EBF9"><center>502</center></td>
+      <td class="color1">502</td>
       <td align="right">{D502}</td>
       <td><center>Ποσό προς καταβολή</center></td>
-      <td style="background-color:#D8EBF9"><center>511</center></td>
+      <td class="color1">511</td>
       <td align="right">{D511}</td>
     </tr>
     <tr>
       <td><center>ΑΙΤΟΥΜΕΝΟ ΠΟΣΟ για επιστροφή</center></td>
-      <td style="background-color:#D8EBF9"><center>503</center></td>
+      <td class="color1">503</td>
       <td align="right"></td>
       <td><center>Καταβολή ποσού</center></td>
-      <td style="background-color:#D8EBF9"><center>523</center></td>
+      <td class="color1">523</td>
       <td align="right"></td>
     </tr>
   <tbody>

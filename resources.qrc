@@ -1,7 +1,6 @@
 <RCC>
   <qresource prefix="images">
-    <file>images/cut.png</file>
     <file>images/open.png</file>
-    <file>images/save.png</file>
+    <file>images/font.png</file>
   </qresource>
 </RCC>

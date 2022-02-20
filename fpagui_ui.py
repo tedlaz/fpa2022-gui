@@ -17,10 +17,10 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
 from PySide6.QtWidgets import (QApplication, QHBoxLayout, QHeaderView, QLabel,
-    QLineEdit, QMainWindow, QMenu, QMenuBar,
-    QPlainTextEdit, QPushButton, QSizePolicy, QSpacerItem,
-    QStatusBar, QTabWidget, QTableWidget, QTableWidgetItem,
-    QTextEdit, QVBoxLayout, QWidget)
+    QLineEdit, QMainWindow, QPlainTextEdit, QPushButton,
+    QSizePolicy, QSpacerItem, QStatusBar, QTabWidget,
+    QTableWidget, QTableWidgetItem, QTextEdit, QToolBar,
+    QVBoxLayout, QWidget)
 import resources_rc
 
 class Ui_MainWindow(object):
@@ -28,13 +28,16 @@ class Ui_MainWindow(object):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(804, 621)
-        self.actionOpen = QAction(MainWindow)
-        self.actionOpen.setObjectName(u"actionOpen")
-        icon = QIcon()
-        icon.addFile(u":/images/images/open.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.actionOpen.setIcon(icon)
         self.actionopenfpa = QAction(MainWindow)
         self.actionopenfpa.setObjectName(u"actionopenfpa")
+        icon = QIcon()
+        icon.addFile(u":/images/images/open.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionopenfpa.setIcon(icon)
+        self.actionselectfont = QAction(MainWindow)
+        self.actionselectfont.setObjectName(u"actionselectfont")
+        icon1 = QIcon()
+        icon1.addFile(u":/images/images/font.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionselectfont.setIcon(icon1)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout = QVBoxLayout(self.centralwidget)
@@ -49,6 +52,7 @@ class Ui_MainWindow(object):
         self.isozygio.setObjectName(u"isozygio")
         font = QFont()
         font.setFamilies([u"Fira Code Retina"])
+        font.setPointSize(7)
         self.isozygio.setFont(font)
         self.isozygio.setLineWrapMode(QPlainTextEdit.NoWrap)
         self.isozygio.setPlainText(u"")
@@ -168,6 +172,24 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.btn_parse.sizePolicy().hasHeightForWidth())
         self.btn_parse.setSizePolicy(sizePolicy)
+        font1 = QFont()
+        font1.setPointSize(12)
+        font1.setBold(True)
+        self.btn_parse.setFont(font1)
+        self.btn_parse.setCursor(QCursor(Qt.PointingHandCursor))
+        self.btn_parse.setStyleSheet(u"QPushButton{\n"
+"  background: rgb(0, 170, 255);\n"
+"  border: 2px solid rgb(0, 170, 200);\n"
+"  padding: 10px;\n"
+"  border-radius: 14px;\n"
+"  color: white;\n"
+"}\n"
+"\n"
+"QPushButton:hover{\n"
+"	background-color: rgb(26, 221, 107);\n"
+"	 border: 2px solid rgb(26, 150, 107);\n"
+"}\n"
+"")
 
         self.horizontalLayout_3.addWidget(self.btn_parse)
 
@@ -179,12 +201,6 @@ class Ui_MainWindow(object):
         self.transformations_tab.setObjectName(u"transformations_tab")
         self.verticalLayout_4 = QVBoxLayout(self.transformations_tab)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.trans = QPlainTextEdit(self.transformations_tab)
-        self.trans.setObjectName(u"trans")
-        self.trans.setMaximumSize(QSize(16777215, 100))
-
-        self.verticalLayout_4.addWidget(self.trans)
-
         self.accounts = QTableWidget(self.transformations_tab)
         self.accounts.setObjectName(u"accounts")
 
@@ -215,26 +231,34 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_3.addWidget(self.fpa)
 
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_5.addItem(self.horizontalSpacer_3)
+
+        self.btnprint = QPushButton(self.fpa_tab)
+        self.btnprint.setObjectName(u"btnprint")
+
+        self.horizontalLayout_5.addWidget(self.btnprint)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout_5)
+
         self.tabWidget.addTab(self.fpa_tab, "")
-        self.new_tab = QWidget()
-        self.new_tab.setObjectName(u"new_tab")
-        self.tabWidget.addTab(self.new_tab, "")
 
         self.verticalLayout.addWidget(self.tabWidget)
 
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QMenuBar(MainWindow)
-        self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 804, 22))
-        self.menuFile = QMenu(self.menubar)
-        self.menuFile.setObjectName(u"menuFile")
-        MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        self.toolBar = QToolBar(MainWindow)
+        self.toolBar.setObjectName(u"toolBar")
+        MainWindow.addToolBar(Qt.TopToolBarArea, self.toolBar)
 
-        self.menubar.addAction(self.menuFile.menuAction())
-        self.menuFile.addAction(self.actionOpen)
+        self.toolBar.addAction(self.actionopenfpa)
+        self.toolBar.addAction(self.actionselectfont)
 
         self.retranslateUi(MainWindow)
 
@@ -245,12 +269,12 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"\u03a5\u03c0\u03bf\u03bb\u03bf\u03b3\u03b9\u03c3\u03bc\u03cc\u03c2 \u03a6\u03a0\u0391", None))
-        self.actionOpen.setText(QCoreApplication.translate("MainWindow", u"Open", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"\u0399\u03c3\u03bf\u03b6\u03cd\u03b3\u03b9\u03bf \u03c3\u03b5 \u03a6\u03a0\u0391", None))
+        self.actionopenfpa.setText(QCoreApplication.translate("MainWindow", u"open", None))
+        self.actionselectfont.setText(QCoreApplication.translate("MainWindow", u"selectfont", None))
 #if QT_CONFIG(tooltip)
-        self.actionOpen.setToolTip(QCoreApplication.translate("MainWindow", u"Open isozygio file", None))
+        self.actionselectfont.setToolTip(QCoreApplication.translate("MainWindow", u"\u0395\u03c0\u03b9\u03bb\u03bf\u03b3\u03ae \u03b3\u03c1\u03b1\u03bc\u03bc\u03b1\u03c4\u03bf\u03c3\u03b5\u03b9\u03c1\u03ac\u03c2", None))
 #endif // QT_CONFIG(tooltip)
-        self.actionopenfpa.setText(QCoreApplication.translate("MainWindow", u"openfpa", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"\u0395\u03c0\u03c9\u03bd\u03c5\u03bc\u03af\u03b1:", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"\u0391\u03c0\u03cc:", None))
         self.le_apo.setText("")
@@ -264,12 +288,12 @@ class Ui_MainWindow(object):
         self.le_debit.setText("")
         self.label_7.setText(QCoreApplication.translate("MainWindow", u"\u03a0\u03af\u03c3\u03c4\u03c9\u03c3\u03b7:", None))
         self.le_credit.setText("")
-        self.btn_parse.setText(QCoreApplication.translate("MainWindow", u"Parse", None))
+        self.btn_parse.setText(QCoreApplication.translate("MainWindow", u"\u03a5\u03c0\u03bf\u03bb\u03bf\u03b3\u03b9\u03c3\u03bc\u03cc\u03c2 \u03a6\u03a0\u0391", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.isozygio_tab), QCoreApplication.translate("MainWindow", u"\u0399\u03c3\u03bf\u03b6\u03cd\u03b3\u03b9\u03bf", None))
-        self.btnmatch.setText(QCoreApplication.translate("MainWindow", u"calculate", None))
+        self.btnmatch.setText(QCoreApplication.translate("MainWindow", u"\u03ad\u03bb\u03b5\u03b3\u03c7\u03bf\u03c2 \u03ba\u03b1\u03b9 \u03c5\u03c0\u03bf\u03bb\u03bf\u03b3\u03b9\u03c3\u03bc\u03cc\u03c2", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.transformations_tab), QCoreApplication.translate("MainWindow", u"\u039c\u03b5\u03c4\u03b1\u03c3\u03c7\u03b7\u03bc\u03b1\u03c4\u03b9\u03c3\u03bc\u03bf\u03af", None))
+        self.btnprint.setText(QCoreApplication.translate("MainWindow", u"\u0395\u03ba\u03c4\u03cd\u03c0\u03c9\u03c3\u03b7", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.fpa_tab), QCoreApplication.translate("MainWindow", u"\u03a6\u03a0\u0391", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.new_tab), QCoreApplication.translate("MainWindow", u"\u039d\u03ad\u03bf", None))
-        self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
+        self.toolBar.setWindowTitle(QCoreApplication.translate("MainWindow", u"toolBar", None))
     # retranslateUi
 

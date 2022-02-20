@@ -13,10 +13,11 @@ else:
     INI_PATH = os.path.join(APP_PATH, INI_FILE_NAME)
 
 
-ACCOUNT_MATCH = os.path.join(APP_PATH, 'acc_match.txt')
+# ACCOUNT_MATCH = os.path.join(APP_PATH, 'acc_match.txt')
 
 initial_ini = """[General]
 encoding=WINDOWS-1253
+isozygio_font=
 
 [PARSE]
 name=1 19 80
