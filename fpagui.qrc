@@ -1,0 +1,17 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>icons/folder-open-solid.svg</file>
+    <file>icons/folder-plus-solid.svg</file>
+    <file>icons/pen-to-square-solid.svg</file>
+    <file>icons/file-pdf-solid.svg</file>
+    <file>icons/angle-down-solid.svg</file>
+    <file>icons/angle-left-solid.svg</file>
+    <file>icons/angle-right-solid.svg</file>
+    <file>icons/angles-right-solid.svg</file>
+    <file>icons/angle-up-solid.svg</file>
+    <file>icons/file-import-solid.svg</file>
+    <file>icons/font-solid.svg</file>
+    <file>icons/gears-solid.svg</file>
+    <file>icons/print-solid.svg</file>
+  </qresource>
+</RCC>

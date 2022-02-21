@@ -5,11 +5,13 @@ from collections import namedtuple
 from PySide6 import QtCore, QtGui, QtPrintSupport, QtWidgets
 from PySide6.QtCore import Qt
 
+import fpagui_rc
 from calculate2html import html_final
 from fpagui_ui import Ui_MainWindow
-from ini_handle import INI, PARSE_POSITIONS
+from ini_handle import APP_PATH, INI, PARSE_POSITIONS
 from isozygio_parse import parse_filtered
 from moving_codes_e2 import E2CODES
+from parse_template import ParserTemplate
 
 IsoSelector = namedtuple('IsoSelector', 'row start end size')
 
@@ -20,63 +22,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.setAcceptDrops(True)
         self.isozygio.setFont(INI.value('isozygio_font'))
+
+        self.parse_template = ParserTemplate()
+        self.open_template_file(
+            INI.value('parse_template_file', defaultValue=''))
+
         self.isozygio_file_name = ''
         self.matched = {}
         self.res = {}
         self.pistotiko = 0
-        self.load_parse_positions_from_ini()
+        self.is_template_editing = False
+        # self.load_parse_positions_from_ini()
         self.create_connections()
-
-    def load_parse_positions_from_ini(self):
-        self.codata = PARSE_POSITIONS['name']
-        self.le_eponymia.setText(f'{self.codata}')
-
-        self.apo = PARSE_POSITIONS['apo']
-        self.le_apo.setText(f'{self.apo}')
-
-        self.eos = PARSE_POSITIONS['eos']
-        self.le_eos.setText(f'{self.eos}')
-
-        self.account = PARSE_POSITIONS['acc']
-        self.le_account.setText(f'{self.account}')
-
-        self.per = PARSE_POSITIONS['per']
-        self.le_per.setText(f'{self.per}')
-
-        self.debit = PARSE_POSITIONS['xre']
-        self.le_debit.setText(f'{self.debit}')
-
-        self.credit = PARSE_POSITIONS['pis']
-        self.le_credit.setText(f'{self.credit}')
-
-    def create_pars_parameters(self):
-        pars = {}
-
-        lin, start, end = self.codata
-        pars['name'] = {'line_no': lin, 'slice': slice(start, end)}
-
-        lin, start, end = self.apo
-        pars['apo'] = {'line_no': lin, 'slice': slice(start, end)}
-
-        lin, start, end = self.eos
-        pars['eos'] = {'line_no': lin, 'slice': slice(start, end)}
-
-        pars['acc'] = slice(self.account[0], self.account[1])
-        pars['per'] = slice(self.per[0], self.per[1])
-        pars['debit'] = slice(self.debit[0], self.debit[1])
-        pars['credit'] = slice(self.credit[0], self.credit[1])
-        pars['fpa_acc'] = INI.value('fpa/fpa_acc', defaultValue='54.00')
-        pars['fpa_acc_exception'] = INI.value(
-            'fpa/fpa_acc_exception', defaultValue='54.00.9')
-        pars['omades'] = INI.value('fpa/omades', defaultValue='1267')
-        pars['omades_negative'] = INI.value(
-            'fpa/negative_omades', defaultValue='7')
-
-        return pars
 
     def create_connections(self):
         self.actionopenfpa.triggered.connect(self.open)
-        self.actionselectfont.triggered.connect(self.select_font)
+        self.btn_grammatoseira.clicked.connect(self.select_font)
         self.isozygio.selectionChanged.connect(
             self.handleIsozygioSelectionChanged)
         self.isozygio.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -85,6 +46,56 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.btn_parse.clicked.connect(self.handle_parse)
         self.btnmatch.clicked.connect(self.handle_match)
         self.btnprint.clicked.connect(self.printpreviewDialog)
+        self.btn_template_toggle.clicked.connect(self.template_toggle)
+        self.btn_open_template.clicked.connect(self.select_template_file)
+        self.btn_edit_template.clicked.connect(self.edit_template)
+
+    def edit_template(self):
+        if self.is_template_editing:
+            self.fr3_iso_footer.setStyleSheet("")
+            self.le_protypo_name.setReadOnly(True)
+            self.le_fpa.setReadOnly(True)
+            self.le_fpa_ektos.setReadOnly(True)
+            self.le_omades.setReadOnly(True)
+            self.le_omades_negative.setReadOnly(True)
+            self.parse_template.set_name(self.le_protypo_name.text().strip())
+            self.parse_template.set_fpa(self.le_fpa.text().strip())
+            self.parse_template.set_fpa_exception(
+                self.le_fpa_ektos.text().strip())
+            self.parse_template.set_omades(self.le_omades.text().strip())
+            self.parse_template.set_omades_negative(
+                self.le_omades_negative.text().strip())
+            if self.parse_template.is_saved2disk == False:
+                spath = os.path.join(
+                    APP_PATH, f'{self.parse_template.name}.tml')
+                self.parse_template.save2file(spath)
+                self.lbl_template_name.setText(self.parse_template.name)
+                INI.setValue('parse_template_file', spath)
+            self.btn_edit_template.setText('Επεξεργασία')
+            self.is_template_editing = False
+            return
+
+        self.fr3_iso_footer.setStyleSheet(
+            "QLineEdit{background-color: rgb(255, 222, 222);}")
+        self.le_protypo_name.setReadOnly(False)
+        self.le_fpa.setReadOnly(False)
+        self.le_fpa_ektos.setReadOnly(False)
+        self.le_omades.setReadOnly(False)
+        self.le_omades_negative.setReadOnly(False)
+        self.btn_edit_template.setText('Αποθήκευση')
+        self.is_template_editing = True
+
+    def template_toggle(self):
+        if self.fr3_iso_footer.maximumHeight() == 0:
+            self.fr3_iso_footer.setMaximumHeight(200)
+            self.fr3_iso_footer.setMinimumHeight(200)
+            self.btn_template_toggle.setIcon(QtGui.QIcon(
+                ':/icons/icons/angle-down-solid.svg'))
+        else:
+            self.fr3_iso_footer.setMaximumHeight(0)
+            self.fr3_iso_footer.setMinimumHeight(0)
+            self.btn_template_toggle.setIcon(QtGui.QIcon(
+                ':/icons/icons/angle-up-solid.svg'))
 
     def select_font(self):
         opval = QtWidgets.QFontDialog.MonospacedFonts
@@ -103,15 +114,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 "Please open isozygio ..."
             )
             return
-        if not all([self.codata, self.apo, self.eos, self.account, self.per, self.debit, self.credit]):
+        if self.parse_template.is_saved2disk == False:
             QtWidgets.QMessageBox.critical(
                 self,
-                "Error",
-                "Please provide all positions in order to proceed"
+                "Το πρότυπο σάρωσης έχει αλλάξει",
+                "Αποθηκεύστε πρώτα τις αλλαγές που έγιναν στο πρότυπο."
             )
             return
-        pars = self.create_pars_parameters()
-        self.res = parse_filtered(self.isozygio.toPlainText(), pars)
+
+        self.res = parse_filtered(
+            self.isozygio.toPlainText(), self.parse_template)
         accounts = [f'{i.acc} - {i.per}' for i in self.res['lines']]
         self.accounts.setColumnCount(2)
         self.accounts.setRowCount(len(accounts))
@@ -127,7 +139,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             return
         e2codes_reverse = {val: key for key, val in E2CODES.items()}
         for i, acc in enumerate(accounts):
-            self.accounts.setItem(i, 0, QtWidgets.QTableWidgetItem(acc))
+            item = QtWidgets.QTableWidgetItem(acc)
+            item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.accounts.setItem(i, 0, item)
             combo = QtWidgets.QComboBox()
             combo.wheelEvent = lambda event: None
             combo.addItems(E2CODES)
@@ -140,7 +154,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         pistotiko, ok = QtWidgets.QInputDialog.getDouble(
             self,
             "Πιστωτικό Υπόλοιπο",
-            "Πόσό:",
+            "Ποσό:",
             self.pistotiko,
             0,
             10000000,
@@ -260,44 +274,44 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def set_company(self):
         data = self.handleIsozygioSelectionChanged()
         self.codata = (data.row, data.start, data.end)
-        INI.setValue('parse/name', f'{data.row} {data.start} {data.end}')
-        self.le_eponymia.setText(f'{self.codata}')
+        self.parse_template.set_pname(data.row, data.start, data.end)
+        self.le_eponymia.setText(self.parse_template.pname_txt)
 
     def set_apo(self):
         data = self.handleIsozygioSelectionChanged()
         self.apo = (data.row, data.start, data.end)
-        INI.setValue('parse/apo', f'{data.row} {data.start} {data.end}')
-        self.le_apo.setText(f'{self.apo}')
+        self.parse_template.set_papo(data.row, data.start, data.end)
+        self.le_apo.setText(self.parse_template.papo_txt)
 
     def set_eos(self):
         data = self.handleIsozygioSelectionChanged()
         self.eos = (data.row, data.start, data.end)
-        INI.setValue('parse/eos', f'{data.row} {data.start} {data.end}')
-        self.le_eos.setText(f'{self.eos}')
+        self.parse_template.set_peos(data.row, data.start, data.end)
+        self.le_eos.setText(self.parse_template.peos_txt)
 
     def set_account(self):
         data = self.handleIsozygioSelectionChanged()
         self.account = (data.start, data.end)
-        INI.setValue('parse/acc', f'{data.start} {data.end}')
-        self.le_account.setText(f'{self.account}')
+        self.parse_template.set_pacc(data.start, data.end)
+        self.le_account.setText(self.parse_template.pacc_txt)
 
     def set_per(self):
         data = self.handleIsozygioSelectionChanged()
         self.per = (data.start, data.end)
-        INI.setValue('parse/per', f'{data.start} {data.end}')
-        self.le_per.setText(f'{self.per}')
+        self.parse_template.set_pper(data.start, data.end)
+        self.le_per.setText(self.parse_template.pper_txt)
 
     def set_debit(self):
         data = self.handleIsozygioSelectionChanged()
         self.debit = (data.start, data.end)
-        INI.setValue('parse/xre', f'{data.start} {data.end}')
-        self.le_debit.setText(f'{self.debit}')
+        self.parse_template.set_pxre(data.start, data.end)
+        self.le_debit.setText(self.parse_template.pxre_txt)
 
     def set_credit(self):
         data = self.handleIsozygioSelectionChanged()
         self.credit = (data.start, data.end)
-        INI.setValue('parse/pis', f'{data.start} {data.end}')
-        self.le_credit.setText(f'{self.credit}')
+        self.parse_template.set_ppis(data.start, data.end)
+        self.le_credit.setText(self.parse_template.ppis_txt)
 
     def open(self):
         # fnam, _ = qw.QFileDialog.getOpenFileName(self, "Open", self.fnam, "")
@@ -307,6 +321,31 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if file_name:
             self.open_isozygio_file(file_name)
         self.handle_parse()
+
+    def select_template_file(self):
+        inif = INI.value('parse_template_file', defaultValue='')
+        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(
+            self, 'Επιλογή προτύπου', inif, "*.tml")
+        if file_name:
+            self.open_template_file(file_name)
+
+    def open_template_file(self, file_name: str):
+        self.parse_template = ParserTemplate().load_from_file(file_name)
+        INI.setValue('parse_template_file', file_name)
+        self.lbl_template_name.setText(self.parse_template.name)
+
+        self.le_protypo_name.setText(self.parse_template.name)
+        self.le_fpa.setText(self.parse_template.fpa)
+        self.le_fpa_ektos.setText(self.parse_template.fpa_exception)
+        self.le_omades.setText(self.parse_template.omades)
+        self.le_omades_negative.setText(self.parse_template.omades_negative)
+        self.le_eponymia.setText(self.parse_template.pname_txt)
+        self.le_apo.setText(self.parse_template.papo_txt)
+        self.le_eos.setText(self.parse_template.peos_txt)
+        self.le_account.setText(self.parse_template.pacc_txt)
+        self.le_per.setText(self.parse_template.pper_txt)
+        self.le_debit.setText(self.parse_template.pxre_txt)
+        self.le_credit.setText(self.parse_template.ppis_txt)
 
     def open_isozygio_file(self, file_name):
         encoding_from_ini = INI.value('encoding', defaultValue='WINDOWS-1253')
@@ -360,16 +399,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         printer.setPageSize(QtGui.QPageSize.A3)
         printer.setColorMode(QtPrintSupport.QPrinter.Color)
         printer.setOutputFormat(QtPrintSupport.QPrinter.PdfFormat)
-        printer.setOutputFileName(pdfname)
-        if os.path.exists(pdfname):
-            response = QtWidgets.QMessageBox.question(
-                self,
-                'Προσοχή',
-                f'Υπάρχει ήδη to αρχείο {pdfname}, να συνεχίσω;',
-                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
-            )
-            if response == QtWidgets.QMessageBox.No:
-                return
-        self.fpa.print_(printer)
-        QtWidgets.QMessageBox.information(
-            self, 'Δημιουργήθηκε PDF', f'Το αρχείο {pdfname} δημιουργήθηκε με επιτυχία!!!')
+        fileName, filtr = QtWidgets.QFileDialog.getSaveFileName(self,
+                                                                "Αποθήκευση",
+                                                                pdfname,
+                                                                "PDF Files (*.pdf)")
+        if fileName:
+            printer.setOutputFileName(fileName)
+            self.fpa.print_(printer)

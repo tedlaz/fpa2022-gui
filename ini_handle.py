@@ -18,22 +18,7 @@ else:
 initial_ini = """[General]
 encoding=WINDOWS-1253
 isozygio_font=
-
-[PARSE]
-name=1 19 80
-apo=4 79  105
-eos=4 115 146
-acc=1   25
-per=27  51
-xre=97  112
-pis=113 128
-
-[FPA]
-fpa_acc=54.00
-fpa_acc_exception=54.00.9
-omades=1267
-omades_negative=7
-
+parse_template_file=
 """
 
 

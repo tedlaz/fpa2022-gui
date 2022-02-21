@@ -3,6 +3,7 @@ import re
 from collections import namedtuple
 
 from ini_handle import APP_PATH
+from parse_template import ParserTemplate
 from utils import grglish_small_nosp
 
 GREEK_NUMBER_RE = r"[\d\.]+,\d{2}"  # r'[0-9]+(\.[0-9]+)?(\,[0-9]+)?')"
@@ -37,11 +38,11 @@ def parse_header(line: str, slic: slice) -> str:
     return line[slic].strip()
 
 
-def parse_line(line: str, pars) -> ILine:
-    acc = line[pars['acc']].strip()
-    per = line[pars['per']].strip()
-    xre = line[pars['debit']].strip()
-    pis = line[pars['credit']].strip()
+def parse_line(line: str, pars: ParserTemplate) -> ILine:
+    acc = line[pars.pacc_slice.slice].strip()
+    per = line[pars.pper_slice.slice].strip()
+    xre = line[pars.pxre_slice.slice].strip()
+    pis = line[pars.ppis_slice.slice].strip()
     if all([is_greek_account(acc), is_greek_number(xre), is_greek_number(pis)]):
         dxre = gr2f(xre)
         dpis = gr2f(pis)
@@ -49,13 +50,13 @@ def parse_line(line: str, pars) -> ILine:
         omada = acc[0]
         normal_ypo = ypo
 
-        if omada in pars['omades_negative']:
+        if omada in pars.omades_negative:
             normal_ypo = -ypo
         return ILine(acc, per, dxre, dpis, ypo, normal_ypo)
     return ILine('', '', 0, 0, 0, 0)
 
 
-def parse(isozygio_lines: str, pars: dict) -> dict:
+def parse(isozygio_lines: str, pars: ParserTemplate) -> dict:
     name = ''
     apo = ''
     eos = ''
@@ -63,14 +64,14 @@ def parse(isozygio_lines: str, pars: dict) -> dict:
 
     for i, line in enumerate(isozygio_lines.split('\n')):
 
-        if i == pars['name']['line_no']:
-            name = parse_header(line, pars['name']['slice'])
+        if i == pars.pname_slice.line:
+            name = parse_header(line, pars.pname_slice.slice)
 
-        if i == pars['apo']['line_no']:
-            apo = parse_header(line, pars['apo']['slice'])
+        if i == pars.papo_slice.line:
+            apo = parse_header(line, pars.papo_slice.slice)
 
-        if i == pars['eos']['line_no']:
-            eos = parse_header(line, pars['eos']['slice'])
+        if i == pars.peos_slice.line:
+            eos = parse_header(line, pars.peos_slice.slice)
 
         lin = parse_line(line, pars)
 
@@ -82,7 +83,7 @@ def parse(isozygio_lines: str, pars: dict) -> dict:
     return {'name': name, 'gname': gpath, 'apo': apo, 'eos': eos, 'lines': lines}
 
 
-def filter_low_level(accounts: list, pars: dict) -> list:
+def filter_low_level(accounts: list, pars: ParserTemplate) -> list:
     """
     Παίρνουμε μόνο τους κινούμενους λογαριασμούς και όχι ανωτεροβάθμιους
     """
@@ -100,12 +101,12 @@ def filter_low_level(accounts: list, pars: dict) -> list:
     return low_level
 
 
-def filter_fpa(accounts: list, pars: dict) -> list:
+def filter_fpa(accounts: list, pars: ParserTemplate) -> list:
     """Μόνο οι λογαριασμοί που πιθανόν έχουν ΦΠΑ"""
-    return [a for a in accounts if a[0] in pars['omades']]
+    return [a for a in accounts if a[0] in pars.omades]
 
 
-def filter_lines(lines: list, filter_func, pars: dict) -> list:
+def filter_lines(lines: list, filter_func, pars: ParserTemplate) -> list:
     """Φιλτράρουμε εγγραφές με βάση το λογαριασμό και κάποια συνάρτηση φίλτρο"""
     accounts = [line.acc for line in lines]
     lines_dict = {l.acc: l for l in lines}
@@ -114,7 +115,7 @@ def filter_lines(lines: list, filter_func, pars: dict) -> list:
     return filtered
 
 
-def calculate_fpa_from_isozygio(low_level: list, pars: dict) -> float:
+def calculate_fpa_from_isozygio(low_level: list, pars: ParserTemplate) -> float:
     """
     Βρίσκουμε το υπόλοιπο ΦΠΑ περιόδου αφαιρόντας τους λογαριασμούς ΦΠΑ
     τακτοποίησης (συνήθως 54.00.9*)
@@ -123,16 +124,16 @@ def calculate_fpa_from_isozygio(low_level: list, pars: dict) -> float:
 
     for lin in low_level:
 
-        if lin.acc.startswith(pars['fpa_acc_exception']):
+        if lin.acc.startswith(pars.fpa_exception):
             continue
 
-        if lin.acc.startswith(pars['fpa_acc']):
+        if lin.acc.startswith(pars.fpa):
             total += lin.ypo
 
     return round(-total, 2)
 
 
-def parse_filtered(isozygio_text: str, pars, pistotiko: float = 0) -> dict:
+def parse_filtered(isozygio_text: str, pars: ParserTemplate) -> dict:
 
     # name, apo, eos, lines = parse(isozygio_text, pars)
     parsed = parse(isozygio_text, pars)
