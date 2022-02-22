@@ -130,8 +130,10 @@ dmypy.json
 .pyre/
 
 # Tedlaz
-validated_afms.txt
-zzz_afms_to_validate.txt
 .vscode/
 zeep/
-qhomeacc.exe
+*.exe
+fpagui_rc.py
+fpagui_ui.py
+fpagui.ini
+installer.nsi
