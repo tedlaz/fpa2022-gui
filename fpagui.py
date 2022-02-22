@@ -8,7 +8,7 @@ from PySide6.QtCore import Qt
 import fpagui_rc
 from calculate2html import html_final
 from fpagui_ui import Ui_MainWindow
-from ini_handle import APP_PATH, INI, PARSE_POSITIONS
+from ini_handle import APP_PATH, INI
 from isozygio_parse import parse_filtered
 from moving_codes_e2 import E2CODES
 from parse_template import ParserTemplate
@@ -49,6 +49,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.btn_template_toggle.clicked.connect(self.template_toggle)
         self.btn_open_template.clicked.connect(self.select_template_file)
         self.btn_edit_template.clicked.connect(self.edit_template)
+        self.btn_recalculate.clicked.connect(self.recalculate)
 
     def edit_template(self):
         if self.is_template_editing:
@@ -133,10 +134,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.accounts.horizontalHeader().setStretchLastSection(True)
 
         self.matched = self.load_account_e2_matching()
-        if not self.matched:
-            self.accounts.setColumnCount(0)
-            self.accounts.setRowCount(0)
-            return
+
         e2codes_reverse = {val: key for key, val in E2CODES.items()}
         for i, acc in enumerate(accounts):
             item = QtWidgets.QTableWidgetItem(acc)
@@ -151,6 +149,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.accounts.setCellWidget(i, 1, combo)
         self.accounts.resizeRowsToContents()
         self.accounts.resizeColumnsToContents()
+        self.tabWidget.setCurrentIndex(1)
+        self.btnmatch.setEnabled(True)
+        self.handle_match()
+
+    def set_pistotiko(self):
+        self.tabWidget.setCurrentIndex(2)
+        # self.fpa.setHtml('')
         pistotiko, ok = QtWidgets.QInputDialog.getDouble(
             self,
             "Πιστωτικό Υπόλοιπο",
@@ -162,8 +167,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         )
         if ok:
             self.pistotiko = pistotiko
-            self.tabWidget.setCurrentIndex(1)
-            self.handle_match()
+
+    def recalculate(self):
+        self.set_pistotiko()
+        self.handle_match()
 
     def handle_match(self):
         row_number = self.accounts.rowCount()
@@ -180,13 +187,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             not_matched_str = '\n'.join(not_matched)
             QtWidgets.QMessageBox.critical(
                 self,
-                "Error",
+                "Δεν έχει γίνει αντιστοίχιση κωδικών λογιστικής",
                 ("Οι παρακάτω λογαριασμοί δεν έχουν αντιστοίχιση με κωδικούς ΦΠΑ\n"
                  f"{not_matched_str}"
                  )
             )
             return
-        self.save_account_e2_matching()
+
+        if not self.save_account_e2_matching():
+            QtWidgets.QMessageBox.critical(
+                self,
+                "Λάθος",
+                "Δεν έγινε αποθήκευση του αρχείου αντιστοίχισης"
+            )
+            return
+        self.tabWidget.setCurrentIndex(2)
         fpa_final = {
             'epon': self.res['name'],
             'apo': self.res['apo'],
@@ -198,7 +213,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             key = self.matched[line.acc]
             fpa_final[key] = round(fpa_final.get(key, 0) + line.normal_ypo, 2)
         self.fpa.setHtml(html_final(fpa_final))
-        self.tabWidget.setCurrentIndex(2)
+        self.btnprint.setEnabled(True)
 
     def load_account_e2_matching(self):
         dict1 = {}
@@ -214,8 +229,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def save_account_e2_matching(self):
         sort_vals = [f"{k} {self.matched[k]}" for k in sorted(self.matched)]
-        with open(self.res['gname'], 'w', encoding='utf8') as fil:
-            fil.write('\n'.join(sort_vals))
+        try:
+            with open(self.res['gname'], 'w', encoding='utf8') as fil:
+                fil.write('\n'.join(sort_vals))
+            return True
+        except Exception:
+            return False
 
     def on_isozygio_context(self, point):
         setcompany = QtGui.QAction(
@@ -313,15 +332,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.parse_template.set_ppis(data.start, data.end)
         self.le_credit.setText(self.parse_template.ppis_txt)
 
-    def open(self):
-        # fnam, _ = qw.QFileDialog.getOpenFileName(self, "Open", self.fnam, "")
-        inif = INI.value('isozygio_file', defaultValue='')
-        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(
-            self, 'Open', inif, "*.txt")
-        if file_name:
-            self.open_isozygio_file(file_name)
-        self.handle_parse()
-
     def select_template_file(self):
         inif = INI.value('parse_template_file', defaultValue='')
         file_name, _ = QtWidgets.QFileDialog.getOpenFileName(
@@ -347,6 +357,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.le_debit.setText(self.parse_template.pxre_txt)
         self.le_credit.setText(self.parse_template.ppis_txt)
 
+    def open(self):
+        # fnam, _ = qw.QFileDialog.getOpenFileName(self, "Open", self.fnam, "")
+        inif = INI.value('isozygio_file', defaultValue='')
+        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(
+            self, 'Open', inif, "*.txt")
+        if file_name:
+            self.open_isozygio_file(file_name)
+        self.handle_parse()
+
     def open_isozygio_file(self, file_name):
         encoding_from_ini = INI.value('encoding', defaultValue='WINDOWS-1253')
         with open(file_name, encoding=encoding_from_ini) as fil:
@@ -357,6 +376,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.accounts.setColumnCount(0)
         self.tabWidget.setCurrentIndex(0)
         self.isozygio_file_name = file_name
+        self.btn_parse.setEnabled(True)
+        self.btnprint.setEnabled(False)
+        self.btnmatch.setEnabled(False)
 
     def handleIsozygioSelectionChanged(self) -> IsoSelector:
         cursor = self.isozygio.textCursor()

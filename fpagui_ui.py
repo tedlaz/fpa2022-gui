@@ -135,6 +135,7 @@ class Ui_MainWindow(object):
 
         self.btn_parse = QPushButton(self.fr2_iso_line)
         self.btn_parse.setObjectName(u"btn_parse")
+        self.btn_parse.setEnabled(False)
         sizePolicy2 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
@@ -401,6 +402,7 @@ class Ui_MainWindow(object):
 
         self.btnmatch = QPushButton(self.transformations_tab)
         self.btnmatch.setObjectName(u"btnmatch")
+        self.btnmatch.setEnabled(False)
         self.btnmatch.setIcon(icon3)
 
         self.horizontalLayout_4.addWidget(self.btnmatch)
@@ -427,8 +429,19 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_5.addItem(self.horizontalSpacer_3)
 
+        self.btn_recalculate = QPushButton(self.fpa_tab)
+        self.btn_recalculate.setObjectName(u"btn_recalculate")
+        self.btn_recalculate.setIcon(icon3)
+
+        self.horizontalLayout_5.addWidget(self.btn_recalculate)
+
+        self.horizontalSpacer_7 = QSpacerItem(10, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_5.addItem(self.horizontalSpacer_7)
+
         self.btnprint = QPushButton(self.fpa_tab)
         self.btnprint.setObjectName(u"btnprint")
+        self.btnprint.setEnabled(False)
         icon6 = QIcon()
         icon6.addFile(u":/icons/icons/file-pdf-solid.svg", QSize(), QIcon.Normal, QIcon.Off)
         self.btnprint.setIcon(icon6)
@@ -501,6 +514,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.isozygio_tab), QCoreApplication.translate("MainWindow", u"\u0399\u03c3\u03bf\u03b6\u03cd\u03b3\u03b9\u03bf", None))
         self.btnmatch.setText(QCoreApplication.translate("MainWindow", u"\u0388\u03bb\u03b5\u03b3\u03c7\u03bf\u03b9 \u03b1\u03bd\u03c4\u03b9\u03c3\u03c4\u03bf\u03af\u03c7\u03b9\u03c3\u03b7\u03c2 \u03ba\u03b1\u03b9 \u03c5\u03c0\u03bf\u03bb\u03bf\u03b3\u03b9\u03c3\u03bc\u03cc\u03c2 \u03a6\u03a0\u0391", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.transformations_tab), QCoreApplication.translate("MainWindow", u"\u039c\u03b5\u03c4\u03b1\u03c3\u03c7\u03b7\u03bc\u03b1\u03c4\u03b9\u03c3\u03bc\u03bf\u03af", None))
+        self.btn_recalculate.setText(QCoreApplication.translate("MainWindow", u"\u0395\u03c0\u03b1\u03bd\u03c5\u03c0\u03bf\u03bb\u03bf\u03b3\u03b9\u03c3\u03bc\u03cc\u03c2 \u03bc\u03b5 \u03c0\u03b9\u03c3\u03c4\u03c9\u03c4\u03b9\u03ba\u03cc \u03c0\u03c1\u03bf\u03b7\u03b3.\u03c0\u03b5\u03c1\u03b9\u03cc\u03b4\u03bf\u03c5", None))
         self.btnprint.setText(QCoreApplication.translate("MainWindow", u"\u0395\u03be\u03b1\u03b3\u03c9\u03b3\u03ae \u03c3\u03b5 PDF", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.fpa_tab), QCoreApplication.translate("MainWindow", u"\u03a6\u03a0\u0391", None))
         self.toolBar.setWindowTitle(QCoreApplication.translate("MainWindow", u"toolBar", None))

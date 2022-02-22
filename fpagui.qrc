@@ -13,5 +13,6 @@
     <file>icons/font-solid.svg</file>
     <file>icons/gears-solid.svg</file>
     <file>icons/print-solid.svg</file>
+    <file>icons/iso2fpa.png</file>
   </qresource>
 </RCC>
