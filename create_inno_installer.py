@@ -34,6 +34,7 @@ SolidCompression=yes
 WizardStyle=modern
 
 [Languages]
+Name: "greek"; MessagesFile: "Greek.isl"
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
