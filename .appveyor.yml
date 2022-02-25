@@ -26,9 +26,9 @@ build_script:
   - cmd: pyside6-rcc.exe .\fpagui.qrc -o fpagui_rc.py
   - cmd: python create_inno_installer.py
   - cmd: pyinstaller -F -w -i iso2fpa.ico iso2fpa.py
-  - cmd: copy .\dist\isofpa.exe .
+  - cmd: copy .\dist\iso2fpa.exe .
   - cmd: iscc installer.iss
-  - cmd: del isofpa.exe
+  - cmd: del iso2fpa.exe
 
 artifacts:
   - path: '*.exe'
