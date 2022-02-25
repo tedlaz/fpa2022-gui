@@ -133,7 +133,7 @@ dmypy.json
 .vscode/
 zeep/
 *.exe
-fpagui_rc.py
-fpagui_ui.py
+# fpagui_rc.py
+# fpagui_ui.py
 fpagui.ini
 installer.nsi

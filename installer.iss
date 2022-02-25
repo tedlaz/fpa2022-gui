@@ -3,7 +3,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "iso2fpa"
-#define MyAppVersion "220223.0131"
+#define MyAppVersion "220223.1453"
 #define MyAppPublisher "Ted Lazaros"
 #define MyAppURL "https://tedlaz.github.io/weblinks"
 #define MyAppExeName "iso2fpa.exe"
